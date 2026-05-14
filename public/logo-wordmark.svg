@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 80" width="380" height="80">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F4C7A1" stop-opacity="0.9"></stop>
+      <stop offset="60%" stop-color="#F4C7A1" stop-opacity="0.25"></stop>
+      <stop offset="100%" stop-color="#F4C7A1" stop-opacity="0"></stop>
+    </radialGradient>
+  </defs>
+  
+  <path d="M22 22 Q12 40 22 58" fill="none" stroke="#EDE7DA" stroke-width="1.5" stroke-linecap="round"></path>
+  <path d="M58 22 Q68 40 58 58" fill="none" stroke="#EDE7DA" stroke-width="1.5" stroke-linecap="round"></path>
+  <circle cx="40" cy="40" r="18" fill="url(#g)"></circle>
+  <circle cx="40" cy="40" r="2.4" fill="#F4C7A1"></circle>
+  
+  <text x="92" y="52" font-family="&#39;Instrument Serif&#39;, &#39;Cormorant Garamond&#39;, Georgia, serif" font-style="italic" font-size="36" fill="#EDE7DA" letter-spacing="-0.5">comfort line</text>
+</svg>
