@@ -47,7 +47,7 @@ const TERMS = {
     "comfort line is anonymous emotional support. our listeners are trained to hold space — to listen without judgement and without pushing. they are not therapists, counsellors, or medical professionals.",
     "this is not a substitute for therapy or licensed mental health care. if you need clinical support, please reach out to a qualified professional. comfort line is here for the in-between.",
     "if you're in immediate danger or crisis, please contact your local emergency line or a crisis helpline. comfort line is not built for emergencies, and we cannot guarantee real-time availability.",
-    "by booking a session, you confirm that you understand the above and that you're 18 or over.",
+    "by booking a session, you confirm that you understand the above.",
     "we may end a session early, or decline a future one, if it puts you or our listener at risk. we'll always tell you why.",
     "refunds are available within 24 hours of booking if you haven't started your session. once a session has happened, refunds are case-by-case — message us and we'll talk it through.",
   ],

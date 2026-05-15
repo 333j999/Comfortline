@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Glyph } from "./Glyph";
 import { BookButton } from "./BookButton";
+import { MobileMenu } from "./MobileMenu";
 
 export function Nav() {
   return (
@@ -50,6 +51,7 @@ export function Nav() {
           Start a session
         </BookButton>
       </div>
+      <MobileMenu />
     </nav>
   );
 }
