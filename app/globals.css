@@ -269,6 +269,20 @@ html, body {
 .bg-hairline            { background-color: var(--hairline); }
 .shadow-glow-warm       { box-shadow: 0 0 40px var(--warm-glow); }
 
+/* Pause expensive background animations while any modal is open.
+   They're invisible behind the modal anyway and the GPU work was
+   making modal scroll choppy. */
+body.modal-open .spore,
+body.modal-open .gradient-bg-hero::before,
+body.modal-open .gradient-bg-hero::after,
+body.modal-open .gradient-bg-sessions::before,
+body.modal-open .gradient-bg-pricing::before,
+body.modal-open .gradient-bg-closing::before,
+body.modal-open .soft-pulse,
+body.modal-open .animate-breath {
+  animation-play-state: paused !important;
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .animate-breath,

@@ -64,6 +64,26 @@ const TOPICS = [
   "something else",
 ];
 
+// Reusable inline styles for chips — no backdrop-filter (kept on the
+// modal overlay only) so scrolling doesn't re-rasterize 12+ blurred
+// surfaces per frame.
+const chipBase = {
+  background: "rgba(8, 9, 27, 0.55)",
+  border: "1px solid rgba(237, 231, 218, 0.10)",
+  color: "#BFB8AB",
+  transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0.32, 1)",
+};
+const chipActive = {
+  background: "rgba(244, 199, 161, 0.14)",
+  border: "1px solid rgba(244, 199, 161, 0.38)",
+  color: "#F4C7A1",
+  transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0.32, 1)",
+};
+const fieldBox = {
+  background: "rgba(8, 9, 27, 0.55)",
+  border: "1px solid rgba(237, 231, 218, 0.10)",
+};
+
 export function BookingDialog({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
@@ -106,21 +126,22 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
       aria-labelledby="booking-title"
       className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 overlay-in"
       style={{
-        background:
-          "linear-gradient(180deg, rgba(5, 6, 18, 0.7) 0%, rgba(15, 17, 38, 0.7) 100%)",
-        backdropFilter: "blur(24px) saturate(140%)",
+        background: "rgba(5, 6, 18, 0.78)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
       }}
       onClick={onClose}
     >
       <div
         className="sheet-in relative w-full max-w-[560px] max-h-[92vh] overflow-y-auto rounded-[28px] p-7 md:p-9"
         style={{
-          background:
-            "linear-gradient(180deg, rgba(22, 26, 50, 0.78) 0%, rgba(18, 21, 42, 0.78) 100%)",
-          backdropFilter: "blur(28px) saturate(160%)",
+          background: "rgba(20, 23, 46, 0.96)",
           border: "1px solid rgba(237, 231, 218, 0.10)",
           boxShadow:
             "0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(237, 231, 218, 0.05)",
+          contain: "layout style paint",
+          overscrollBehavior: "contain",
+          transform: "translateZ(0)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -130,8 +151,7 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
           aria-label="close"
           className="absolute top-5 right-5 grid place-items-center w-9 h-9 rounded-full transition-colors"
           style={{
-            background: "rgba(8, 9, 27, 0.4)",
-            backdropFilter: "blur(10px)",
+            background: "rgba(8, 9, 27, 0.55)",
             color: "#8A8478",
             border: "1px solid rgba(237, 231, 218, 0.10)",
           }}
@@ -191,7 +211,13 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
             <div className="flex flex-col gap-3">
               <FieldLabel>
                 gender <span style={{ color: "#F4C7A1" }}>·</span>{" "}
-                <span className="lowercase" style={{ color: "#8A8478", letterSpacing: 0, textTransform: "none" }}>
+                <span
+                  style={{
+                    color: "#8A8478",
+                    letterSpacing: 0,
+                    textTransform: "none",
+                  }}
+                >
                   required
                 </span>
               </FieldLabel>
@@ -203,21 +229,8 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
                       key={g}
                       type="button"
                       onClick={() => setGender(g)}
-                      className="rounded-full px-4 py-2 font-sans text-[13px] transition-all duration-[240ms]"
-                      style={{
-                        background: active
-                          ? "rgba(244, 199, 161, 0.14)"
-                          : "rgba(8, 9, 27, 0.35)",
-                        backdropFilter: "blur(10px)",
-                        color: active ? "#F4C7A1" : "#BFB8AB",
-                        border: `1px solid ${
-                          active
-                            ? "rgba(244, 199, 161, 0.38)"
-                            : "rgba(237, 231, 218, 0.10)"
-                        }`,
-                        transitionTimingFunction:
-                          "cubic-bezier(0.32, 0.72, 0.32, 1)",
-                      }}
+                      className="rounded-full px-4 py-2 font-sans text-[13px] transition-colors duration-[240ms]"
+                      style={active ? chipActive : chipBase}
                     >
                       {g}
                     </button>
@@ -236,21 +249,8 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
                       key={id}
                       type="button"
                       onClick={() => setPlatform(id)}
-                      className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-sans text-sm transition-all duration-[240ms]"
-                      style={{
-                        background: active
-                          ? "rgba(244, 199, 161, 0.14)"
-                          : "rgba(8, 9, 27, 0.35)",
-                        backdropFilter: "blur(10px)",
-                        color: active ? "#F4C7A1" : "#BFB8AB",
-                        border: `1px solid ${
-                          active
-                            ? "rgba(244, 199, 161, 0.38)"
-                            : "rgba(237, 231, 218, 0.10)"
-                        }`,
-                        transitionTimingFunction:
-                          "cubic-bezier(0.32, 0.72, 0.32, 1)",
-                      }}
+                      className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-sans text-sm transition-colors duration-[240ms]"
+                      style={active ? chipActive : chipBase}
                     >
                       <Icon size={14} strokeWidth={1.5} />
                       {label}
@@ -270,21 +270,8 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
                       key={id}
                       type="button"
                       onClick={() => setDuration(id)}
-                      className="rounded-full px-4 py-2 font-sans text-[13px] transition-all duration-[240ms]"
-                      style={{
-                        background: active
-                          ? "rgba(244, 199, 161, 0.14)"
-                          : "rgba(8, 9, 27, 0.35)",
-                        backdropFilter: "blur(10px)",
-                        color: active ? "#F4C7A1" : "#BFB8AB",
-                        border: `1px solid ${
-                          active
-                            ? "rgba(244, 199, 161, 0.38)"
-                            : "rgba(237, 231, 218, 0.10)"
-                        }`,
-                        transitionTimingFunction:
-                          "cubic-bezier(0.32, 0.72, 0.32, 1)",
-                      }}
+                      className="rounded-full px-4 py-2 font-sans text-[13px] transition-colors duration-[240ms]"
+                      style={active ? chipActive : chipBase}
                     >
                       {label}
                     </button>
@@ -316,14 +303,7 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
 
             <div className="flex flex-col gap-2">
               <FieldLabel>anything else?</FieldLabel>
-              <div
-                className="rounded-2xl px-4 py-3"
-                style={{
-                  background: "rgba(8, 9, 27, 0.45)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(237, 231, 218, 0.10)",
-                }}
-              >
+              <div className="rounded-2xl px-4 py-3" style={fieldBox}>
                 <textarea
                   rows={3}
                   value={detail}
@@ -350,7 +330,7 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2.5 font-sans text-base font-medium rounded-full px-7 py-3.5 mt-1 cursor-pointer transition-all duration-[240ms]"
+              className="inline-flex items-center justify-center gap-2.5 font-sans text-base font-medium rounded-full px-7 py-3.5 mt-1 cursor-pointer transition-colors duration-[240ms]"
               style={{
                 background: "#F4C7A1",
                 color: "#2A1A0E",
@@ -396,8 +376,7 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
               onClick={onClose}
               className="self-start font-sans text-sm rounded-full px-5 py-2.5 mt-2"
               style={{
-                background: "rgba(8, 9, 27, 0.4)",
-                backdropFilter: "blur(10px)",
+                background: "rgba(8, 9, 27, 0.55)",
                 color: "#EDE7DA",
                 border: "1px solid rgba(237, 231, 218, 0.16)",
                 cursor: "pointer",
@@ -433,14 +412,7 @@ function Field({
   return (
     <label className="flex flex-col gap-2">
       <FieldLabel>{label}</FieldLabel>
-      <div
-        className="rounded-2xl px-4 py-3"
-        style={{
-          background: "rgba(8, 9, 27, 0.45)",
-          backdropFilter: "blur(10px)",
-          border: "1px solid rgba(237, 231, 218, 0.10)",
-        }}
-      >
+      <div className="rounded-2xl px-4 py-3" style={fieldBox}>
         {children}
       </div>
     </label>
@@ -474,7 +446,9 @@ function TopicsDropdown({
   }, [open]);
 
   const toggle = (t: string) =>
-    onChange(selected.includes(t) ? selected.filter((x) => x !== t) : [...selected, t]);
+    onChange(
+      selected.includes(t) ? selected.filter((x) => x !== t) : [...selected, t]
+    );
 
   return (
     <div ref={ref} className="relative">
@@ -485,8 +459,7 @@ function TopicsDropdown({
         aria-haspopup="listbox"
         className="w-full flex items-start justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors"
         style={{
-          background: "rgba(8, 9, 27, 0.45)",
-          backdropFilter: "blur(10px)",
+          background: "rgba(8, 9, 27, 0.55)",
           border: `1px solid ${
             open ? "rgba(244, 199, 161, 0.32)" : "rgba(237, 231, 218, 0.10)"
           }`,
@@ -539,11 +512,11 @@ function TopicsDropdown({
           aria-multiselectable="true"
           className="absolute left-0 right-0 top-[calc(100%+8px)] z-10 rounded-2xl p-1.5 max-h-[280px] overflow-y-auto"
           style={{
-            background: "rgba(22, 26, 50, 0.95)",
-            backdropFilter: "blur(28px) saturate(160%)",
+            background: "rgba(22, 26, 50, 0.98)",
             border: "1px solid rgba(237, 231, 218, 0.12)",
             boxShadow:
               "0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(237, 231, 218, 0.05)",
+            overscrollBehavior: "contain",
           }}
         >
           {TOPICS.map((t) => {

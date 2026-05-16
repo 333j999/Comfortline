@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import type { ReactNode } from "react";
 import { BookingDialog } from "./BookingDialog";
 import { InfoDialog } from "./InfoDialog";
@@ -76,6 +76,18 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const openTerms       = useCallback(() => setType("terms"),   []);
   const openHowItWorks  = useCallback(() => setType("how"),     []);
   const close           = useCallback(() => setType(null),      []);
+
+  // Toggle a body class while any modal is open so we can pause the
+  // ambient spores + drifting gradients via CSS (they're invisible
+  // behind the modal and the GPU work was making scroll choppy).
+  useEffect(() => {
+    if (type) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+    return () => document.body.classList.remove("modal-open");
+  }, [type]);
 
   return (
     <ModalCtx.Provider

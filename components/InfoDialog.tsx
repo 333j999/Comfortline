@@ -33,16 +33,20 @@ export function InfoDialog({ eyebrow, title, paragraphs, onClose }: InfoDialogPr
       style={{
         background: "rgba(5, 6, 18, 0.78)",
         backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
       }}
       onClick={onClose}
     >
       <div
         className="sheet-in relative w-full max-w-[560px] max-h-[92vh] overflow-y-auto rounded-[28px] p-8 md:p-10"
         style={{
-          background: "rgba(18, 21, 42, 0.92)",
+          background: "rgba(20, 23, 46, 0.96)",
           border: "1px solid rgba(237, 231, 218, 0.10)",
           boxShadow:
             "0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(237, 231, 218, 0.04)",
+          contain: "layout style paint",
+          overscrollBehavior: "contain",
+          transform: "translateZ(0)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
