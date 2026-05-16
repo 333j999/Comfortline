@@ -126,13 +126,32 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("Resend send error:", error);
-      return NextResponse.json({ error: "send_failed" }, { status: 502 });
+      // Surface the Resend error message in the response while we're
+      // setting up. Useful for diagnosing config issues (unverified
+      // domain, wrong recipient, invalid API key, etc.). Safe to keep
+      // since the recipient is the site owner, not the visitor.
+      return NextResponse.json(
+        {
+          error: "send_failed",
+          detail:
+            typeof error === "object" && error !== null && "message" in error
+              ? String((error as { message: unknown }).message)
+              : String(error),
+        },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error("Unexpected send error:", e);
-    return NextResponse.json({ error: "server_error" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "server_error",
+        detail: e instanceof Error ? e.message : String(e),
+      },
+      { status: 500 }
+    );
   }
 }
 
