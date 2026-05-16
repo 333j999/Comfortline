@@ -25,15 +25,17 @@ export function Pricing() {
           className="font-sans text-fg-2 max-w-[560px] mx-auto mb-10"
           style={{ fontSize: 17, lineHeight: 1.6 }}
         >
-          a 30-minute session starts at £15. no subscriptions, no
+          a 30-minute session starts at £25. no subscriptions, no
           auto-renewals, no contracts. show up once, or come back when you
           need to.
         </p>
         <div
           className="inline-flex items-baseline gap-2 px-7 py-3.5 rounded-full mb-8"
           style={{
-            background: "rgba(18, 21, 42, 0.85)",
-            border: "1px solid rgba(237,231,218,0.16)",
+            background: "rgba(18, 21, 42, 0.55)",
+            backdropFilter: "blur(16px)",
+            border: "1px solid rgba(237,231,218,0.18)",
+            boxShadow: "inset 0 1px 0 rgba(237,231,218,0.05)",
           }}
         >
           <span
@@ -46,7 +48,7 @@ export function Pricing() {
             className="font-display italic text-fg-1"
             style={{ fontSize: 36, letterSpacing: "-0.02em" }}
           >
-            £15
+            £25
           </span>
           <span className="font-sans text-sm text-fg-3">/ 30 min</span>
         </div>

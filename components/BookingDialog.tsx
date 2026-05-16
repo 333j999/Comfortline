@@ -1,14 +1,39 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
-import { X, MessageCircle, Mic, Phone, ArrowRight } from "lucide-react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
+import {
+  X,
+  MessageCircle,
+  Mic,
+  Phone,
+  ArrowRight,
+  ChevronDown,
+  Check,
+} from "lucide-react";
 
 type Platform = "text" | "voice" | "call";
+type Gender = "female" | "male" | "non-binary" | "prefer not to say";
+type Duration = "30" | "60" | "90" | "120";
 
 const PLATFORMS: { id: Platform; label: string; Icon: typeof MessageCircle }[] = [
   { id: "text", label: "text", Icon: MessageCircle },
   { id: "voice", label: "voice note", Icon: Mic },
   { id: "call", label: "call", Icon: Phone },
+];
+
+const GENDERS: Gender[] = ["female", "male", "non-binary", "prefer not to say"];
+
+const DURATIONS: { id: Duration; label: string }[] = [
+  { id: "30", label: "30 min" },
+  { id: "60", label: "1 hour" },
+  { id: "90", label: "1h 30" },
+  { id: "120", label: "2 hours" },
 ];
 
 const TOPICS = [
@@ -18,15 +43,38 @@ const TOPICS = [
   "feeling unheard",
   "school or work",
   "just need to talk",
+  "depression",
+  "abuse",
+  "addiction",
+  "self harm",
+  "impulsive or dark thoughts",
+  "eating disorder",
+  "insecurity",
+  "family issues",
+  "bullying",
+  "anger issues",
+  "love life",
+  "sexuality confusion",
+  "identity issues",
+  "low drive",
+  "panic attacks",
+  "dissociation",
+  "insomnia",
+  "lack of direction",
   "something else",
 ];
 
 export function BookingDialog({ onClose }: { onClose: () => void }) {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  const [gender, setGender] = useState<Gender | "">("");
   const [platform, setPlatform] = useState<Platform>("text");
+  const [duration, setDuration] = useState<Duration>("30");
+  const [date, setDate] = useState("");
   const [topics, setTopics] = useState<string[]>([]);
+  const [detail, setDetail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -41,12 +89,13 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
-  const toggleTopic = (t: string) => {
-    setTopics((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
-  };
-
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (!gender) {
+      setError("please pick how you identify so we can match you well.");
+      return;
+    }
+    setError(null);
     setSubmitted(true);
   };
 
@@ -57,17 +106,21 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
       aria-labelledby="booking-title"
       className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8 overlay-in"
       style={{
-        background: "rgba(5, 6, 18, 0.78)",
-        backdropFilter: "blur(20px)",
+        background:
+          "linear-gradient(180deg, rgba(5, 6, 18, 0.7) 0%, rgba(15, 17, 38, 0.7) 100%)",
+        backdropFilter: "blur(24px) saturate(140%)",
       }}
       onClick={onClose}
     >
       <div
-        className="sheet-in relative w-full max-w-[540px] max-h-[92vh] overflow-y-auto rounded-[28px] p-8 md:p-10"
+        className="sheet-in relative w-full max-w-[560px] max-h-[92vh] overflow-y-auto rounded-[28px] p-7 md:p-9"
         style={{
-          background: "rgba(18, 21, 42, 0.92)",
+          background:
+            "linear-gradient(180deg, rgba(22, 26, 50, 0.78) 0%, rgba(18, 21, 42, 0.78) 100%)",
+          backdropFilter: "blur(28px) saturate(160%)",
           border: "1px solid rgba(237, 231, 218, 0.10)",
-          boxShadow: "0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(237, 231, 218, 0.04)",
+          boxShadow:
+            "0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(237, 231, 218, 0.05)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -77,16 +130,17 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
           aria-label="close"
           className="absolute top-5 right-5 grid place-items-center w-9 h-9 rounded-full transition-colors"
           style={{
-            background: "transparent",
+            background: "rgba(8, 9, 27, 0.4)",
+            backdropFilter: "blur(10px)",
             color: "#8A8478",
-            border: "1px solid rgba(237, 231, 218, 0.08)",
+            border: "1px solid rgba(237, 231, 218, 0.10)",
           }}
         >
           <X size={16} strokeWidth={1.5} />
         </button>
 
         {!submitted ? (
-          <form onSubmit={onSubmit} className="flex flex-col gap-7">
+          <form onSubmit={onSubmit} className="flex flex-col gap-6">
             <div className="flex flex-col gap-2">
               <div
                 className="font-sans text-xs uppercase"
@@ -135,8 +189,46 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
             </Field>
 
             <div className="flex flex-col gap-3">
+              <FieldLabel>
+                gender <span style={{ color: "#F4C7A1" }}>·</span>{" "}
+                <span className="lowercase" style={{ color: "#8A8478", letterSpacing: 0, textTransform: "none" }}>
+                  required
+                </span>
+              </FieldLabel>
+              <div className="flex flex-wrap gap-2">
+                {GENDERS.map((g) => {
+                  const active = gender === g;
+                  return (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setGender(g)}
+                      className="rounded-full px-4 py-2 font-sans text-[13px] transition-all duration-[240ms]"
+                      style={{
+                        background: active
+                          ? "rgba(244, 199, 161, 0.14)"
+                          : "rgba(8, 9, 27, 0.35)",
+                        backdropFilter: "blur(10px)",
+                        color: active ? "#F4C7A1" : "#BFB8AB",
+                        border: `1px solid ${
+                          active
+                            ? "rgba(244, 199, 161, 0.38)"
+                            : "rgba(237, 231, 218, 0.10)"
+                        }`,
+                        transitionTimingFunction:
+                          "cubic-bezier(0.32, 0.72, 0.32, 1)",
+                      }}
+                    >
+                      {g}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
               <FieldLabel>how do you want to talk?</FieldLabel>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex flex-wrap gap-2">
                 {PLATFORMS.map(({ id, label, Icon }) => {
                   const active = platform === id;
                   return (
@@ -146,10 +238,18 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
                       onClick={() => setPlatform(id)}
                       className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 font-sans text-sm transition-all duration-[240ms]"
                       style={{
-                        background: active ? "rgba(244, 199, 161, 0.14)" : "transparent",
+                        background: active
+                          ? "rgba(244, 199, 161, 0.14)"
+                          : "rgba(8, 9, 27, 0.35)",
+                        backdropFilter: "blur(10px)",
                         color: active ? "#F4C7A1" : "#BFB8AB",
-                        border: `1px solid ${active ? "rgba(244, 199, 161, 0.38)" : "rgba(237, 231, 218, 0.10)"}`,
-                        transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0.32, 1)",
+                        border: `1px solid ${
+                          active
+                            ? "rgba(244, 199, 161, 0.38)"
+                            : "rgba(237, 231, 218, 0.10)"
+                        }`,
+                        transitionTimingFunction:
+                          "cubic-bezier(0.32, 0.72, 0.32, 1)",
                       }}
                     >
                       <Icon size={14} strokeWidth={1.5} />
@@ -161,6 +261,49 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
             </div>
 
             <div className="flex flex-col gap-3">
+              <FieldLabel>how long?</FieldLabel>
+              <div className="flex flex-wrap gap-2">
+                {DURATIONS.map(({ id, label }) => {
+                  const active = duration === id;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setDuration(id)}
+                      className="rounded-full px-4 py-2 font-sans text-[13px] transition-all duration-[240ms]"
+                      style={{
+                        background: active
+                          ? "rgba(244, 199, 161, 0.14)"
+                          : "rgba(8, 9, 27, 0.35)",
+                        backdropFilter: "blur(10px)",
+                        color: active ? "#F4C7A1" : "#BFB8AB",
+                        border: `1px solid ${
+                          active
+                            ? "rgba(244, 199, 161, 0.38)"
+                            : "rgba(237, 231, 218, 0.10)"
+                        }`,
+                        transitionTimingFunction:
+                          "cubic-bezier(0.32, 0.72, 0.32, 1)",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <Field label="when works best?">
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="w-full bg-transparent outline-none font-sans text-fg-1"
+                style={{ fontSize: 15, colorScheme: "dark" }}
+              />
+            </Field>
+
+            <div className="flex flex-col gap-2">
               <FieldLabel>what's weighing on you tonight?</FieldLabel>
               <div
                 className="font-sans text-fg-3"
@@ -168,32 +311,46 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
               >
                 pick anything that fits. or none.
               </div>
-              <div className="flex flex-wrap gap-2">
-                {TOPICS.map((t) => {
-                  const active = topics.includes(t);
-                  return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => toggleTopic(t)}
-                      className="rounded-full px-3.5 py-2 font-sans text-[13px] transition-all duration-[240ms]"
-                      style={{
-                        background: active ? "rgba(184, 168, 212, 0.16)" : "transparent",
-                        color: active ? "#EDE7DA" : "#BFB8AB",
-                        border: `1px solid ${active ? "rgba(184, 168, 212, 0.38)" : "rgba(237, 231, 218, 0.10)"}`,
-                        transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0.32, 1)",
-                      }}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
+              <TopicsDropdown selected={topics} onChange={setTopics} />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <FieldLabel>anything else?</FieldLabel>
+              <div
+                className="rounded-2xl px-4 py-3"
+                style={{
+                  background: "rgba(8, 9, 27, 0.45)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(237, 231, 218, 0.10)",
+                }}
+              >
+                <textarea
+                  rows={3}
+                  value={detail}
+                  onChange={(e) => setDetail(e.target.value)}
+                  placeholder="give your listener context so they can prepare. preferred time, what you'd like to focus on, anything that helps."
+                  className="w-full bg-transparent outline-none font-sans text-fg-1 placeholder:text-fg-4 resize-none"
+                  style={{ fontSize: 14.5, lineHeight: 1.55 }}
+                />
               </div>
             </div>
 
+            {error && (
+              <div
+                className="font-sans text-[13px] rounded-2xl px-4 py-3"
+                style={{
+                  color: "#D98A8A",
+                  background: "rgba(217, 138, 138, 0.08)",
+                  border: "1px solid rgba(217, 138, 138, 0.25)",
+                }}
+              >
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2.5 font-sans text-base font-medium rounded-full px-7 py-3.5 mt-2 cursor-pointer transition-all duration-[240ms]"
+              className="inline-flex items-center justify-center gap-2.5 font-sans text-base font-medium rounded-full px-7 py-3.5 mt-1 cursor-pointer transition-all duration-[240ms]"
               style={{
                 background: "#F4C7A1",
                 color: "#2A1A0E",
@@ -239,7 +396,8 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
               onClick={onClose}
               className="self-start font-sans text-sm rounded-full px-5 py-2.5 mt-2"
               style={{
-                background: "transparent",
+                background: "rgba(8, 9, 27, 0.4)",
+                backdropFilter: "blur(10px)",
                 color: "#EDE7DA",
                 border: "1px solid rgba(237, 231, 218, 0.16)",
                 cursor: "pointer",
@@ -254,7 +412,7 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
   );
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
+function FieldLabel({ children }: { children: ReactNode }) {
   return (
     <div
       className="font-sans text-xs uppercase"
@@ -270,7 +428,7 @@ function Field({
   children,
 }: {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <label className="flex flex-col gap-2">
@@ -278,12 +436,156 @@ function Field({
       <div
         className="rounded-2xl px-4 py-3"
         style={{
-          background: "rgba(8, 9, 27, 0.55)",
+          background: "rgba(8, 9, 27, 0.45)",
+          backdropFilter: "blur(10px)",
           border: "1px solid rgba(237, 231, 218, 0.10)",
         }}
       >
         {children}
       </div>
     </label>
+  );
+}
+
+function TopicsDropdown({
+  selected,
+  onChange,
+}: {
+  selected: string[];
+  onChange: (next: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocClick(e: MouseEvent) {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDocClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const toggle = (t: string) =>
+    onChange(selected.includes(t) ? selected.filter((x) => x !== t) : [...selected, t]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        className="w-full flex items-start justify-between gap-3 rounded-2xl px-4 py-3 text-left transition-colors"
+        style={{
+          background: "rgba(8, 9, 27, 0.45)",
+          backdropFilter: "blur(10px)",
+          border: `1px solid ${
+            open ? "rgba(244, 199, 161, 0.32)" : "rgba(237, 231, 218, 0.10)"
+          }`,
+          cursor: "pointer",
+        }}
+      >
+        <div className="flex-1 min-w-0">
+          {selected.length === 0 ? (
+            <span
+              className="font-sans"
+              style={{ color: "#5C574E", fontSize: 15 }}
+            >
+              select all that fit
+            </span>
+          ) : (
+            <div className="flex flex-wrap gap-1.5">
+              {selected.map((s) => (
+                <span
+                  key={s}
+                  className="font-sans rounded-full px-2.5 py-0.5"
+                  style={{
+                    background: "rgba(184, 168, 212, 0.16)",
+                    color: "#EDE7DA",
+                    fontSize: 12.5,
+                    border: "1px solid rgba(184, 168, 212, 0.30)",
+                  }}
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+        <ChevronDown
+          size={18}
+          strokeWidth={1.5}
+          color="#8A8478"
+          style={{
+            flexShrink: 0,
+            marginTop: 2,
+            transform: open ? "rotate(180deg)" : "rotate(0deg)",
+            transition: "transform 240ms cubic-bezier(0.32, 0.72, 0.32, 1)",
+          }}
+        />
+      </button>
+
+      {open && (
+        <div
+          role="listbox"
+          aria-multiselectable="true"
+          className="absolute left-0 right-0 top-[calc(100%+8px)] z-10 rounded-2xl p-1.5 max-h-[280px] overflow-y-auto"
+          style={{
+            background: "rgba(22, 26, 50, 0.95)",
+            backdropFilter: "blur(28px) saturate(160%)",
+            border: "1px solid rgba(237, 231, 218, 0.12)",
+            boxShadow:
+              "0 24px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(237, 231, 218, 0.05)",
+          }}
+        >
+          {TOPICS.map((t) => {
+            const active = selected.includes(t);
+            return (
+              <button
+                key={t}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => toggle(t)}
+                className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors"
+                style={{
+                  background: active ? "rgba(184, 168, 212, 0.14)" : "transparent",
+                  color: active ? "#EDE7DA" : "#BFB8AB",
+                  cursor: "pointer",
+                }}
+              >
+                <div
+                  className="grid place-items-center rounded-md"
+                  style={{
+                    width: 16,
+                    height: 16,
+                    background: active
+                      ? "rgba(184, 168, 212, 0.32)"
+                      : "rgba(8, 9, 27, 0.5)",
+                    border: `1px solid ${
+                      active
+                        ? "rgba(184, 168, 212, 0.6)"
+                        : "rgba(237, 231, 218, 0.16)"
+                    }`,
+                    flexShrink: 0,
+                  }}
+                >
+                  {active && <Check size={11} color="#EDE7DA" strokeWidth={2.4} />}
+                </div>
+                <span className="font-sans text-[14px]">{t}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }

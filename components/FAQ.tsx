@@ -11,7 +11,7 @@ const items = [
   },
   {
     q: "does therapy feel preachy, or like they're not really listening?",
-    a: "you're not alone in feeling that way. comfort line isn't here to advise you, fix you, or push you toward a worldview. no homework, no labels, no \"have you tried…\". listeners are trained to do one thing: make space, and actually hear you. you set the pace. you decide what's worth saying.",
+    a: "you're not alone in feeling that way. comfort line isn't here to advise you, fix you, or push you toward a worldview. no homework, no labels, no \"have you tried…\". our listeners do one thing: make space, and actually hear you. you set the pace. you decide what's worth saying.",
   },
   {
     q: "how anonymous is anonymous?",
@@ -23,7 +23,7 @@ const items = [
   },
   {
     q: "who are the listeners?",
-    a: "trained, vetted humans — not bots. they're trained in active listening and emotional support. they're not allowed to give medical advice, and they're not trying to \"fix\" you. they're here to sit with you.",
+    a: "experienced, vetted humans — not bots. they have real practice in active listening and emotional support. they're not allowed to give medical advice, and they're not trying to \"fix\" you. they're here to sit with you.",
   },
   {
     q: "what if i go quiet?",

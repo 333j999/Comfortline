@@ -14,7 +14,7 @@ const steps = [
   {
     n: "03",
     t: "someone listens",
-    d: "a trained listener — not a therapist — makes space for whatever you have to say. no advice unless you ask. for as long as you need.",
+    d: "an experienced listener — not a therapist — makes space for whatever you have to say. no advice unless you ask. for as long as you need.",
   },
 ];
 

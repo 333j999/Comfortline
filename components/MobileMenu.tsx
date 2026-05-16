@@ -50,8 +50,9 @@ export function MobileMenu() {
         <div
           className="fixed inset-0 z-40 md:hidden overlay-in flex flex-col"
           style={{
-            background: "rgba(8, 9, 27, 0.96)",
-            backdropFilter: "blur(24px)",
+            background:
+              "linear-gradient(180deg, rgba(8, 9, 27, 0.6) 0%, rgba(27, 31, 58, 0.6) 100%)",
+            backdropFilter: "blur(28px) saturate(140%)",
           }}
           onClick={() => setOpen(false)}
           role="dialog"

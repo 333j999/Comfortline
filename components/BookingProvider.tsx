@@ -5,12 +5,13 @@ import type { ReactNode } from "react";
 import { BookingDialog } from "./BookingDialog";
 import { InfoDialog } from "./InfoDialog";
 
-type ModalType = "booking" | "privacy" | "terms" | null;
+type ModalType = "booking" | "privacy" | "terms" | "how" | null;
 
 type Ctx = {
   open: () => void;
   openPrivacy: () => void;
   openTerms: () => void;
+  openHowItWorks: () => void;
   close: () => void;
   type: ModalType;
 };
@@ -19,6 +20,7 @@ const ModalCtx = createContext<Ctx>({
   open: () => {},
   openPrivacy: () => {},
   openTerms: () => {},
+  openHowItWorks: () => {},
   close: () => {},
   type: null,
 });
@@ -40,11 +42,24 @@ const PRIVACY = {
   ],
 };
 
+const HOW_IT_WORKS = {
+  eyebrow: "how it works",
+  title: "what to expect when you book.",
+  paragraphs: [
+    "tell us a little. share what to call you, how to reach you back, and what you'd like to talk about. takes a minute. these details stay with us — your listener never sees them.",
+    "we match you with an experienced listener — not a therapist — who'll hold space for the conversation you want to have.",
+    "pick the format that feels right: text, a voice note, or a 1-to-1 call. you can switch any time, even mid-session.",
+    "we send you a session link at the contact you gave us — usually within an hour, often sooner. you join when you're ready.",
+    "no advice unless you ask for it. no homework. no labels. no \"have you tried…\". just space, and someone who listens.",
+    "afterwards, we send a single soft check-in. that's it. you decide if and when you want to come back.",
+  ],
+};
+
 const TERMS = {
   eyebrow: "terms",
   title: "what comfort line is, and isn't.",
   paragraphs: [
-    "comfort line is anonymous emotional support. our listeners are trained to hold space — to listen without judgement and without pushing. they are not therapists, counsellors, or medical professionals.",
+    "comfort line is anonymous emotional support. our listeners are experienced in holding space — listening without judgement and without pushing. they are not therapists, counsellors, or medical professionals.",
     "this is not a substitute for therapy or licensed mental health care. if you need clinical support, please reach out to a qualified professional. comfort line is here for the in-between.",
     "if you're in immediate danger or crisis, please contact your local emergency line or a crisis helpline. comfort line is not built for emergencies, and we cannot guarantee real-time availability.",
     "by booking a session, you confirm that you understand the above.",
@@ -56,17 +71,21 @@ const TERMS = {
 export function BookingProvider({ children }: { children: ReactNode }) {
   const [type, setType] = useState<ModalType>(null);
 
-  const open        = useCallback(() => setType("booking"), []);
-  const openPrivacy = useCallback(() => setType("privacy"), []);
-  const openTerms   = useCallback(() => setType("terms"),   []);
-  const close       = useCallback(() => setType(null),      []);
+  const open            = useCallback(() => setType("booking"), []);
+  const openPrivacy     = useCallback(() => setType("privacy"), []);
+  const openTerms       = useCallback(() => setType("terms"),   []);
+  const openHowItWorks  = useCallback(() => setType("how"),     []);
+  const close           = useCallback(() => setType(null),      []);
 
   return (
-    <ModalCtx.Provider value={{ open, openPrivacy, openTerms, close, type }}>
+    <ModalCtx.Provider
+      value={{ open, openPrivacy, openTerms, openHowItWorks, close, type }}
+    >
       {children}
       {type === "booking" && <BookingDialog onClose={close} />}
-      {type === "privacy" && <InfoDialog {...PRIVACY} onClose={close} />}
-      {type === "terms"   && <InfoDialog {...TERMS}   onClose={close} />}
+      {type === "privacy" && <InfoDialog {...PRIVACY}        onClose={close} />}
+      {type === "terms"   && <InfoDialog {...TERMS}          onClose={close} />}
+      {type === "how"     && <InfoDialog {...HOW_IT_WORKS}   onClose={close} />}
     </ModalCtx.Provider>
   );
 }

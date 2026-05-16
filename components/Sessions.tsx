@@ -5,19 +5,16 @@ import { BookButton } from "./BookButton";
 const items = [
   {
     Icon: MessageCircle,
-    meta: "text · 30 min",
     title: "a quiet chat",
     d: "just type. read at your own pace. nothing said aloud.",
   },
   {
     Icon: Mic,
-    meta: "voice · async",
     title: "leave a voice note",
     d: "say it out loud, in your own voice. they'll listen back when you're done.",
   },
   {
     Icon: Phone,
-    meta: "call · 45 min",
     title: "talk on the line",
     d: "one-to-one. anonymous. no video. for the nights you need a voice in the room.",
   },
@@ -44,25 +41,30 @@ export function Sessions() {
           pick what feels right. switch any time.
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {items.map(({ Icon, meta, title, d }) => (
+          {items.map(({ Icon, title, d }) => (
             <div
               key={title}
-              className="flex flex-col gap-3.5 rounded-[20px] p-7 min-h-[280px]"
+              className="flex flex-col gap-4 rounded-[24px] p-7 min-h-[280px]"
               style={{
-                background: "rgba(18, 21, 42, 0.85)",
-                border: "1px solid rgba(237,231,218,0.08)",
-                boxShadow: "inset 0 1px 0 rgba(237,231,218,0.04)",
+                background: "rgba(18, 21, 42, 0.55)",
+                backdropFilter: "blur(18px)",
+                border: "1px solid rgba(237,231,218,0.10)",
+                boxShadow:
+                  "inset 0 1px 0 rgba(237,231,218,0.05), 0 16px 40px rgba(0,0,0,0.32)",
               }}
             >
               <div
                 className="w-[52px] h-[52px] rounded-2xl grid place-items-center"
-                style={{ background: "#1B1F3A" }}
+                style={{
+                  background: "rgba(31, 36, 64, 0.7)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(237,231,218,0.08)",
+                }}
               >
                 <Icon size={24} color="#F4C7A1" strokeWidth={1.5} />
               </div>
-              <Eyebrow>{meta}</Eyebrow>
               <div
-                className="font-display italic text-fg-1"
+                className="font-display italic text-fg-1 mt-2"
                 style={{ fontSize: 28, letterSpacing: "-0.02em", lineHeight: 1.15 }}
               >
                 {title}

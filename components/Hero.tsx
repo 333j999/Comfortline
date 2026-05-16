@@ -28,7 +28,7 @@ export function Hero() {
         </p>
         <div className="flex flex-wrap gap-3.5 mt-10">
           <BookButton>Start a session</BookButton>
-          <BookButton variant="ghost">how it works</BookButton>
+          <BookButton variant="ghost" action="how">how it works</BookButton>
         </div>
         <div className="flex items-center gap-2.5 mt-12 font-sans text-[13px] text-fg-3">
           <div
