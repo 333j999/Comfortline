@@ -95,6 +95,8 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
   const [detail, setDetail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -109,14 +111,46 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
     };
   }, [onClose]);
 
-  const onSubmit = (e: FormEvent) => {
+  const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!gender) {
       setError("please pick how you identify so we can match you well.");
       return;
     }
     setError(null);
-    setSubmitted(true);
+    setSending(true);
+    try {
+      const res = await fetch("/api/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          contact,
+          gender,
+          platform,
+          duration,
+          date,
+          topics,
+          detail,
+          website: honeypot,
+        }),
+      });
+      if (!res.ok) {
+        const data: { error?: string } = await res.json().catch(() => ({}));
+        if (data.error === "email_not_configured") {
+          setError("we're not ready to receive bookings just yet. please check back shortly.");
+        } else {
+          setError("something went wrong on our end. please try again in a moment.");
+        }
+        setSending(false);
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("couldn't reach us. please check your connection and try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -161,6 +195,27 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
 
         {!submitted ? (
           <form onSubmit={onSubmit} className="flex flex-col gap-6">
+            {/* Honeypot — hidden from humans, filled by spam bots. If non-empty,
+                the API silently drops the submission. */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+              style={{
+                position: "absolute",
+                left: -9999,
+                top: -9999,
+                height: 0,
+                width: 0,
+                opacity: 0,
+                pointerEvents: "none",
+              }}
+            />
+
             <div className="flex flex-col gap-2">
               <div
                 className="font-sans text-xs uppercase"
@@ -330,16 +385,20 @@ export function BookingDialog({ onClose }: { onClose: () => void }) {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2.5 font-sans text-base font-medium rounded-full px-7 py-3.5 mt-1 cursor-pointer transition-colors duration-[240ms]"
+              disabled={sending}
+              className="inline-flex items-center justify-center gap-2.5 font-sans text-base font-medium rounded-full px-7 py-3.5 mt-1 transition-colors duration-[240ms]"
               style={{
                 background: "#F4C7A1",
                 color: "#2A1A0E",
-                boxShadow: "0 0 40px rgba(244, 199, 161, 0.22)",
+                boxShadow: sending ? "none" : "0 0 40px rgba(244, 199, 161, 0.22)",
                 border: "none",
+                opacity: sending ? 0.7 : 1,
+                cursor: sending ? "wait" : "pointer",
                 transitionTimingFunction: "cubic-bezier(0.32, 0.72, 0.32, 1)",
               }}
             >
-              hold space for me <ArrowRight size={16} strokeWidth={1.5} />
+              {sending ? "holding…" : "hold space for me"}
+              {!sending && <ArrowRight size={16} strokeWidth={1.5} />}
             </button>
 
             <div
