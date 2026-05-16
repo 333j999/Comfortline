@@ -5,13 +5,14 @@ import type { ReactNode } from "react";
 import { BookingDialog } from "./BookingDialog";
 import { InfoDialog } from "./InfoDialog";
 
-type ModalType = "booking" | "privacy" | "terms" | "how" | null;
+type ModalType = "booking" | "privacy" | "terms" | "how" | "crisis" | null;
 
 type Ctx = {
   open: () => void;
   openPrivacy: () => void;
   openTerms: () => void;
   openHowItWorks: () => void;
+  openCrisis: () => void;
   close: () => void;
   type: ModalType;
 };
@@ -21,6 +22,7 @@ const ModalCtx = createContext<Ctx>({
   openPrivacy: () => {},
   openTerms: () => {},
   openHowItWorks: () => {},
+  openCrisis: () => {},
   close: () => {},
   type: null,
 });
@@ -39,6 +41,21 @@ const PRIVACY = {
     "we use your contact details for two things: confirming your session, and a single soft check-in afterwards. that's it.",
     "you can ask us to delete everything we hold on you at any time. reply to any message from us and we'll clear it the same day.",
     "if you ever feel uneasy about how we're holding your information, tell us. we'll fix it before we do anything else.",
+  ],
+};
+
+const CRISIS = {
+  eyebrow: "if you're in crisis",
+  title: "please reach someone trained for this.",
+  paragraphs: [
+    "comfort line is not built for emergencies. if you're thinking about harming yourself, or you're in immediate danger, please contact someone who can help right now.",
+    "UK · Samaritans · call 116 123 · free, 24/7, any reason.",
+    "UK · Shout · text 85258 · free, 24/7, text-only.",
+    "UK · NHS · call 111 and press option 2 for urgent mental health support.",
+    "UK · 999 · if a life is in immediate danger.",
+    "US · 988 · call or text the suicide and crisis lifeline.",
+    "anywhere else · findahelpline.com · every country's crisis line in one place.",
+    "we're here too, when you're ready. but please reach them first.",
   ],
 };
 
@@ -75,6 +92,7 @@ export function BookingProvider({ children }: { children: ReactNode }) {
   const openPrivacy     = useCallback(() => setType("privacy"), []);
   const openTerms       = useCallback(() => setType("terms"),   []);
   const openHowItWorks  = useCallback(() => setType("how"),     []);
+  const openCrisis      = useCallback(() => setType("crisis"),  []);
   const close           = useCallback(() => setType(null),      []);
 
   // Toggle a body class while any modal is open so we can pause the
@@ -91,13 +109,22 @@ export function BookingProvider({ children }: { children: ReactNode }) {
 
   return (
     <ModalCtx.Provider
-      value={{ open, openPrivacy, openTerms, openHowItWorks, close, type }}
+      value={{
+        open,
+        openPrivacy,
+        openTerms,
+        openHowItWorks,
+        openCrisis,
+        close,
+        type,
+      }}
     >
       {children}
       {type === "booking" && <BookingDialog onClose={close} />}
-      {type === "privacy" && <InfoDialog {...PRIVACY}        onClose={close} />}
-      {type === "terms"   && <InfoDialog {...TERMS}          onClose={close} />}
-      {type === "how"     && <InfoDialog {...HOW_IT_WORKS}   onClose={close} />}
+      {type === "privacy" && <InfoDialog {...PRIVACY}      onClose={close} />}
+      {type === "terms"   && <InfoDialog {...TERMS}        onClose={close} />}
+      {type === "how"     && <InfoDialog {...HOW_IT_WORKS} onClose={close} />}
+      {type === "crisis"  && <InfoDialog {...CRISIS}       onClose={close} />}
     </ModalCtx.Provider>
   );
 }
