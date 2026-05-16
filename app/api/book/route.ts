@@ -129,9 +129,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "send_failed" }, { status: 502 });
     }
 
-    // Customer confirmation — fire-and-forget. We don't fail the whole
-    // submission if this errors (the booking already reached the owner).
-    if (isEmail) {
+    // Customer confirmation — only attempt when explicitly enabled.
+    // On Resend's free tier with the default `onboarding@resend.dev`
+    // sender, sends to recipients other than the account-registered
+    // email always 403. Set SEND_CUSTOMER_CONFIRMATION=true once you've
+    // verified a sending domain at Resend (and configured
+    // BOOKING_FROM_EMAIL to use it).
+    // Fire-and-forget either way — we don't fail the whole submission
+    // if the confirmation errors (the booking already reached the owner).
+    const customerConfirmationEnabled =
+      process.env.SEND_CUSTOMER_CONFIRMATION === "true";
+    if (isEmail && customerConfirmationEnabled && contact !== to) {
       const customerHtml = `<!doctype html>
 <html><body style="margin:0;background:#fafafa;padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
   <div style="max-width:520px;margin:0 auto;background:#ffffff;padding:36px 32px;border-radius:16px;border:1px solid #ececec;">
